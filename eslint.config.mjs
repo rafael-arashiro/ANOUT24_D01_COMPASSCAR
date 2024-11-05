@@ -5,7 +5,11 @@ import prettierConfig from 'eslint-config-prettier'
 export default [
   {
     files: ['**/*.js'],
-    languageOptions: { sourceType: 'commonjs', globals: globals.browser },
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: globals.node,
+      ...globals.jest
+    },
     plugins: {
       prettier: prettierPlugin
     },

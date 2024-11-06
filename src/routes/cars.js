@@ -1,4 +1,5 @@
 const express = require('express')
+const { request, response } = require('../app')
 
 module.exports = (app) => {
   const router = express.Router()
@@ -15,7 +16,13 @@ module.exports = (app) => {
       .registerCar(request.body)
       .then((result) => response.status(201).json(result[0]))
       .catch((err) => next(err))
-    console.log([result[0]])
+  })
+
+  router.put('/:id/items', (request, response, next) => {
+    app.services.car
+      .updateCarItems(request.body.id)
+      .then(() => response.status(204).send())
+      .catch((err) => next(err))
   })
 
   return router

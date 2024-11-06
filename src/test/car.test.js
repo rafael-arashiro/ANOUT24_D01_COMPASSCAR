@@ -12,7 +12,6 @@ let model_car = {
 }
 
 test('Post test', async () => {
-  await app.db('cars').del()
   return request(app)
     .post(MAIN_ROUTE)
     .send({

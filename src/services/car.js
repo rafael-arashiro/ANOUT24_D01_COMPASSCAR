@@ -10,6 +10,7 @@ module.exports = (app) => {
   }
 
   const registerCar = async (car) => {
+    //Validation errors
     if (!car.brand) throw new ValidationError('brand is required')
 
     if (!car.model) throw new ValidationError('model is required')
@@ -38,8 +39,23 @@ module.exports = (app) => {
 
     await app.db('cars').insert(car)
 
-    return await app.db('cars').where(car)
+    return app.db('cars').where(car)
   }
 
-  return { findCars, registerCar }
+  const updateCarItems = (id, items) => {
+    //Validation erros
+    if (!items) throw new ValidationError('items is required')
+
+    if (items.length > 5)
+      throw new ValidationError('items must be a maximum of 5')
+
+    const itemSet = new Set(items)
+    if (items.length != itemSet.length)
+      throw new ValidationError('items cannot be repeated')
+
+    //Update car items
+    return app.db('cars').where({ id }).update(items)
+  }
+
+  return { findCars, registerCar, updateCarItems }
 }

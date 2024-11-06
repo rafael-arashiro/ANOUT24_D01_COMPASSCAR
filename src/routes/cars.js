@@ -15,6 +15,7 @@ module.exports = (app) => {
       .registerCar(request.body)
       .then((result) => response.status(201).json(result[0]))
       .catch((err) => next(err))
+    console.log([result[0]])
   })
 
   return router

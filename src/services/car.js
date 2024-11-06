@@ -54,7 +54,7 @@ module.exports = (app) => {
       throw new ValidationError('items cannot be repeated')
 
     //Update car items
-    return app.db('cars').where({ id }).update(items)
+    return app.db('car_items').where({ car_id: id }).update(items)
   }
 
   return { findCars, registerCar, updateCarItems }

@@ -12,21 +12,21 @@ let model_car = {
 }
 
 test('Post test', async () => {
-  // await app.db('cars').del()
+  await app.db('cars').del()
   return request(app)
     .post(MAIN_ROUTE)
     .send({
-      brand: 'Marca',
+      brand: 'Nova Marca',
       model: 'Novo Modelo',
-      year: 2018,
-      plate: 'ABC-1D23'
+      plate: 'ABC-1D24',
+      year: 2020
     })
     .then((result) => {
       expect(result.status).toBe(201)
       expect(result.body.brand).toBe('Nova Marca')
       expect(result.body.model).toBe('Novo Modelo')
-      expect(result.body.year).toBe(2018)
-      expect(result.body.plate).toBe('ABC-1D23')
+      expect(result.body.plate).toBe('ABC-1D24')
+      expect(result.body.year).toBe(2020)
     })
 })
 

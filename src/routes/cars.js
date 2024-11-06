@@ -20,8 +20,15 @@ module.exports = (app) => {
 
   router.put('/:id/items', (request, response, next) => {
     app.services.car
-      .updateCarItems(request.body.id)
+      .updateCarItems(request.body.car_id, request.body)
       .then(() => response.status(204).send())
+      .catch((err) => next(err))
+  })
+
+  router.get('/:id', (request, response, next) => {
+    app.services.car
+      .findOneCar(request.params.id)
+      .then((result) => response.status(200).json(result))
       .catch((err) => next(err))
   })
 

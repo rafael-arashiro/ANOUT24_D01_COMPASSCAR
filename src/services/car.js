@@ -5,8 +5,23 @@ module.exports = (app) => {
     return app.db('cars')
   }
 
-  const findOneCar = (brand, model, plate, year) => {
-    return app.db('cars').where({ brand, model, plate, year })
+  const findOneCar = (id) => {
+    const car = app.db('cars').where({ id })
+    if (!car) throw new ValidationError('car not found')
+    const carAndItems = app
+      .db('cars')
+      .where({ id })
+      .join('cars', 'cars_items')
+      .column(
+        'cars.id',
+        'brand',
+        'model',
+        'year',
+        'plate',
+        'date as created_at',
+        'name as items'
+      )
+    return carAndItems
   }
 
   const registerCar = async (car) => {
@@ -34,8 +49,7 @@ module.exports = (app) => {
     )
       throw new ValidationError('plate must be in the correct format ABC-1C34')
 
-    if (findOneCar(car.brand, car.model, car.plate, car.year))
-      throw new ValidationError('car already registered')
+    if (findOneCar(car.id)) throw new ValidationError('car already registered')
 
     await app.db('cars').insert(car)
 
@@ -44,7 +58,8 @@ module.exports = (app) => {
 
   const updateCarItems = (id, items) => {
     //Validation erros
-    if (!items) throw new ValidationError('items is required')
+    if (!items || items.length == 0)
+      throw new ValidationError('items is required')
 
     if (items.length > 5)
       throw new ValidationError('items must be a maximum of 5')
@@ -53,9 +68,11 @@ module.exports = (app) => {
     if (items.length != itemSet.length)
       throw new ValidationError('items cannot be repeated')
 
+    const searchCar = app.db('cars').where({ id })
+    if (!searchCar) throw new ValidationError('car not found')
     //Update car items
     return app.db('car_items').where({ car_id: id }).update(items)
   }
 
-  return { findCars, registerCar, updateCarItems }
+  return { findCars, findOneCar, registerCar, updateCarItems }
 }

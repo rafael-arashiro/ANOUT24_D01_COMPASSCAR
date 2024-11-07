@@ -67,6 +67,37 @@ module.exports = (app) => {
   }
 
   const registerCar = async (car) => {
+    let platePositions012 = [
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H',
+      'I',
+      'J',
+      'K',
+      'L',
+      'M',
+      'N',
+      'O',
+      'P',
+      'Q',
+      'R',
+      'S',
+      'T',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
+      'Z'
+    ]
+    let platePositions467 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    let platePositions5 = platePositions012.concat(platePositions467)
+
     //Validation errors
     if (!car.brand) throw new ValidationError('brand is required')
 
@@ -80,22 +111,25 @@ module.exports = (app) => {
       throw new ValidationError('year must be between 2015 and 2025')
 
     if (
-      typeof car.plate[0] === 'string' &&
-      typeof car.plate[1] === 'string' &&
-      typeof car.plate[2] === 'string' &&
-      car.plate[3] === '-' &&
-      typeof car.plate[4] === 'number' &&
-      (typeof car.plate[5] === 'string' || typeof car.plate[5] === 'number') &&
-      typeof car.plate[6] === 'number' &&
-      typeof car.plate[7] === 'number'
+      car.plate.length != 8 ||
+      platePositions012.indexOf(car.plate[0]) == -1 ||
+      platePositions012.indexOf(car.plate[1]) == -1 ||
+      platePositions012.indexOf(car.plate[2]) == -1 ||
+      car.plate[3] != '-' ||
+      platePositions467.indexOf(car.plate[4]) == -1 ||
+      platePositions5.indexOf(car.plate[5]) == -1 ||
+      platePositions467.indexOf(car.plate[6]) == -1 ||
+      platePositions467.indexOf(car.plate[7]) == -1
     )
       throw new ValidationError('plate must be in the correct format ABC-1C34')
 
-    const carVerify = await app.db('cars').where(car)
+    const carVerify = await app.db('cars').where({ plate: car.plate })
     if (carVerify.length > 0)
       throw new ValidationError('car already registered')
 
-    await app.db('cars').insert(car)
+    newCar = await app.db('cars').insert(car)
+    newCarItems = { name: '', car_id: newCar, date: new Date() }
+    await app.db('cars_items').insert(newCarItems)
 
     return await app.db('cars').where(car)
   }

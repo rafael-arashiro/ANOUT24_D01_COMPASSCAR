@@ -145,8 +145,22 @@ module.exports = (app) => {
     )
       throw new ValidationError('plate must be in the correct format ABC-1C34')
 
-    app.db('cars').where({ id }).update(car)
+    return app.db('cars').where({ id }).update(car)
   }
 
-  return { findCars, findOneCar, registerCar, updateCarItems, updateCar }
+  const deleteCar = (id) => {
+    let car = app.db('cars').where({ id })
+    if (!car) throw new ValidationError('car not found')
+
+    return app.db('cars').where({ id }).del()
+  }
+
+  return {
+    findCars,
+    findOneCar,
+    registerCar,
+    updateCarItems,
+    updateCar,
+    deleteCar
+  }
 }

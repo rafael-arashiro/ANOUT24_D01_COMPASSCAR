@@ -1,8 +1,50 @@
 const ValidationError = require('../errors/ValidationError')
 
 module.exports = (app) => {
-  const findCars = () => {
-    return app.db('cars')
+  const findCars = (filter = {}, page, limit) => {
+    let data
+    let carResponse
+    let count
+
+    let pages
+
+    if (!filter) count = app.db('cars').where(filter).length
+    else count = app.db('cars').where(filter).length
+
+    pages = Math.ceil(count / limit)
+
+    if (!filter)
+      data = app
+        .db('cars')
+        .join('cars', 'cars_items')
+        .column(
+          'cars.id',
+          'brand',
+          'model',
+          'year',
+          'plate',
+          'date as created_at'
+        )
+        .limit(limit)
+        .offset(page)
+    data = app
+      .db('cars')
+      .where(filter)
+      .join('cars', 'cars_items')
+      .column(
+        'cars.id',
+        'brand',
+        'model',
+        'year',
+        'plate',
+        'date as created_at'
+      )
+      .limit(limit)
+      .offset(page)
+
+    carResponse.push({ count: count, pages: pages, data })
+
+    return carResponse
   }
 
   const findOneCar = (id) => {
@@ -49,11 +91,13 @@ module.exports = (app) => {
     )
       throw new ValidationError('plate must be in the correct format ABC-1C34')
 
-    if (findOneCar(car.id)) throw new ValidationError('car already registered')
+    const carVerify = await app.db('cars').where(car)
+    if (carVerify.length > 0)
+      throw new ValidationError('car already registered')
 
     await app.db('cars').insert(car)
 
-    return app.db('cars').where(car)
+    return await app.db('cars').where(car)
   }
 
   const updateCarItems = (id, items) => {

@@ -12,6 +12,7 @@ let model_car = {
 }
 
 test('Post test', async () => {
+  await app.db('cars').del()
   return request(app)
     .post(MAIN_ROUTE)
     .send({
@@ -71,8 +72,8 @@ test('Post test with cars older than 10 years', () => {
     })
 })
 
-test('Post test of an existing car', () => {
-  app.db.insert(model_car)
+test('Post test of an existing car', async () => {
+  await app.db('cars').insert(model_car)
   return request(app)
     .post(MAIN_ROUTE)
     .send(model_car)

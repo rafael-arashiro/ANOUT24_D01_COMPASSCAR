@@ -118,5 +118,35 @@ module.exports = (app) => {
     return app.db('car_items').where({ car_id: id }).update(items)
   }
 
-  return { findCars, findOneCar, registerCar, updateCarItems }
+  const updateCar = (id, car) => {
+    const carFound = app.db('cars').where({ id })
+    if (!carFound) throw new ValidationError('car not found')
+
+    if (car.brand)
+      if (!car.model) throw new ValidationError('model must also be informed')
+
+    if (car.year)
+      if (car.year < 2015 || car.year > 2025)
+        throw new ValidationError('year must be between 2015 and 2025')
+
+    if (car.plate)
+      if (car.plate == carFound.id)
+        throw new ValidationError('car already registered')
+
+    if (
+      typeof car.plate[0] === 'string' &&
+      typeof car.plate[1] === 'string' &&
+      typeof car.plate[2] === 'string' &&
+      car.plate[3] === '-' &&
+      typeof car.plate[4] === 'number' &&
+      (typeof car.plate[5] === 'string' || typeof car.plate[5] === 'number') &&
+      typeof car.plate[6] === 'number' &&
+      typeof car.plate[7] === 'number'
+    )
+      throw new ValidationError('plate must be in the correct format ABC-1C34')
+
+    app.db('cars').where({ id }).update(car)
+  }
+
+  return { findCars, findOneCar, registerCar, updateCarItems, updateCar }
 }

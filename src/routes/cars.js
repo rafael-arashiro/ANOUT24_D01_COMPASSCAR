@@ -57,5 +57,12 @@ module.exports = (app) => {
       .catch((err) => next(err))
   })
 
+  router.patch('/:id', (request, response, next) => {
+    app.services.car
+      .updateCar(request.params.id, request.body)
+      .then((result) => response.status(204).send())
+      .catch((err) => next(err))
+  })
+
   return router
 }

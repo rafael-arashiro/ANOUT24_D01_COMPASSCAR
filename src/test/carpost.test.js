@@ -6,14 +6,13 @@ const MAIN_ROUTE = '/api/v1/cars'
 
 let model_car = {
   brand: 'Marca',
-  model: `Modelo ${new Date()}`,
+  model: 'Modelo',
   year: 2018,
   plate: 'ABC-1D23'
 }
 
 test('Post test', async () => {
-  await app.db('cars').del()
-  await app.db('cars_items').del()
+  await app.db('cars').where({ plate: model_car.plate }).del()
   return request(app)
     .post(MAIN_ROUTE)
     .send(model_car)
@@ -33,7 +32,8 @@ describe('Post test with missing values', () => {
       brand: 'Marca',
       model: 'Modelo',
       year: 2018,
-      plate: 'ABC-1D23'
+      plate: 'ABC-1D23',
+      created_at: new Date()
     }
   })
 
@@ -60,7 +60,8 @@ test('Post test with cars older than 10 years', () => {
       brand: 'Marca',
       model: 'Modelo Velho',
       year: 2014,
-      plate: 'ABC-1D23'
+      plate: 'ABC-1D23',
+      created_at: new Date()
     })
     .then((result) => {
       expect(result.status).toBe(400)
@@ -75,7 +76,8 @@ describe('Post test with a plate with wrong values', () => {
       brand: 'Marca Placa',
       model: 'Modelo Placa',
       year: 2024,
-      plate: 'ABC-1D23'
+      plate: 'ABC-1D23',
+      created_at: new Date()
     }
   })
 
@@ -142,7 +144,8 @@ test('Post test of an existing car', async () => {
     brand: 'Marca Placa Repetida',
     model: 'Modelo Placa Repetido',
     year: 2021,
-    plate: 'NTM-1F49'
+    plate: 'NTM-1F49',
+    created_at: new Date()
   })
   return request(app)
     .post(MAIN_ROUTE)
@@ -150,7 +153,8 @@ test('Post test of an existing car', async () => {
       brand: 'Marca Placa Repetida Dois',
       model: 'Modelo Placa Repetido Dois',
       year: 2022,
-      plate: 'NTM-1F49'
+      plate: 'NTM-1F49',
+      created_at: new Date()
     })
     .then((result) => {
       expect(result.status).toBe(400)

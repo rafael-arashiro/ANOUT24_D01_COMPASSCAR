@@ -47,26 +47,35 @@ module.exports = (app) => {
     return carResponse
   }
 
-  const findOneCar = (id) => {
-    const car = app.db('cars').where({ id })
-    if (!car) throw new ValidationError('car not found')
-    const carAndItems = app
+  const findOneCar = async (id) => {
+    const car = await app.db('cars').where({ id })
+    if (car.length < 1) throw new ValidationError('car not found')
+
+    let carAndItems = app
       .db('cars')
-      .where({ id })
-      .join('cars', 'cars_items')
-      .column(
-        'cars.id',
-        'brand',
-        'model',
-        'year',
-        'plate',
-        'date as created_at',
-        'name as items'
-      )
+      .where({ 'cars.id': id })
+      .join('cars_items', 'cars.id', '=', 'cars_items.car_id')
+      .select('cars.id', 'brand', 'model', 'year', 'plate', 'created_at')
+
+    console.log(carAndItems)
+
     return carAndItems
   }
 
+  // Post car
   const registerCar = async (car) => {
+    //Validation errors
+    if (!car.brand) throw new ValidationError('brand is required')
+
+    if (!car.model) throw new ValidationError('model is required')
+
+    if (!car.year) throw new ValidationError('year is required')
+
+    if (!car.plate) throw new ValidationError('plate is required')
+
+    if (car.year < 2015 || car.year > 2025)
+      throw new ValidationError('year must be between 2015 and 2025')
+
     let platePositions012 = [
       'A',
       'B',
@@ -98,18 +107,6 @@ module.exports = (app) => {
     let platePositions467 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     let platePositions5 = platePositions012.concat(platePositions467)
 
-    //Validation errors
-    if (!car.brand) throw new ValidationError('brand is required')
-
-    if (!car.model) throw new ValidationError('model is required')
-
-    if (!car.year) throw new ValidationError('year is required')
-
-    if (!car.plate) throw new ValidationError('plate is required')
-
-    if (car.year < 2015 || car.year > 2025)
-      throw new ValidationError('year must be between 2015 and 2025')
-
     if (
       car.plate.length != 8 ||
       platePositions012.indexOf(car.plate[0]) == -1 ||
@@ -127,29 +124,43 @@ module.exports = (app) => {
     if (carVerify.length > 0)
       throw new ValidationError('car already registered')
 
-    newCar = await app.db('cars').insert(car)
-    newCarItems = { name: '', car_id: newCar, date: new Date() }
-    await app.db('cars_items').insert(newCarItems)
+    console.log(car)
+    await app.db('cars').insert({
+      brand: car.brand,
+      model: car.model,
+      plate: car.plate,
+      year: car.year,
+      created_at: new Date()
+    })
 
-    return await app.db('cars').where(car)
+    return await app.db('cars').where({ plate: car.plate })
   }
 
-  const updateCarItems = (id, items) => {
-    //Validation erros
-    if (!items || items.length == 0)
+  // Put items by id
+  const updateCarItems = async (id, name) => {
+    // Validation erros
+    if (!Array.isArray(name) || name.length == 0)
       throw new ValidationError('items is required')
 
-    if (items.length > 5)
+    if (name.length > 5)
       throw new ValidationError('items must be a maximum of 5')
 
-    const itemSet = new Set(items)
-    if (items.length != itemSet.length)
+    let nameArray = Array.from(new Set(name))
+    if (name.length > 1 && name.length != nameArray.length)
       throw new ValidationError('items cannot be repeated')
 
-    const searchCar = app.db('cars').where({ id })
-    if (!searchCar) throw new ValidationError('car not found')
-    //Update car items
-    return app.db('car_items').where({ car_id: id }).update(items)
+    const searchCar = await app.db('cars').where({ id })
+    if (searchCar.length < 1) throw new ValidationError('car not found')
+
+    //Update and return
+    await app.db('cars_items').where({ car_id: id }).del()
+
+    for (item in name)
+      await app
+        .db('cars_items')
+        .insert({ name: name[item], car_id: id, date: new Date() })
+
+    return await app.db('cars_items').where({ car_id: id })
   }
 
   const updateCar = (id, car) => {

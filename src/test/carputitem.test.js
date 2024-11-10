@@ -6,7 +6,7 @@ const MAIN_ROUTE = '/api/v1/cars'
 
 let model_car = {
   brand: 'Marca Put',
-  model: `Modelo Put ${new Date()}`,
+  model: 'Modelo Put',
   year: 2022,
   plate: 'CBA-4T56',
   created_at: new Date()

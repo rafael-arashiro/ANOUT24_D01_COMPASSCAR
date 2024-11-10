@@ -5,7 +5,7 @@ exports.up = async (knex) => {
     t.string('model').notNull()
     t.string('plate').notNull()
     t.integer('year').notNull()
-    t.timestamp('created_at').defaultTo(knex.fn.now()).notNull()
+    t.timestamp('created_at', { precision: 3 }).defaultTo(knex.fn.now(3))
   })
 }
 

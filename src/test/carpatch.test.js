@@ -12,8 +12,7 @@ let model_car = {
   brand: 'Marca Patch',
   model: 'Modelo Patch',
   year: 2023,
-  plate: 'NPC-6H24',
-  created_at: date.toISOString()
+  plate: 'NPC-6H24'
 }
 
 let newCar

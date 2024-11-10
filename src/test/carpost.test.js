@@ -16,12 +16,18 @@ test('Post test', async () => {
   return request(app)
     .post(MAIN_ROUTE)
     .send(model_car)
-    .then((response) => {
+    .then(async (response) => {
+      let newId = response.body.id
+      let newCreated_at = response.body.created_at
       expect(response.status).toBe(201)
-      expect(response.body.brand).toBe(model_car.brand)
-      expect(response.body.model).toBe(model_car.model)
-      expect(response.body.plate).toBe(model_car.plate)
-      expect(response.body.year).toBe(model_car.year)
+      expect(response.body).toStrictEqual({
+        id: newId,
+        brand: 'Marca',
+        model: 'Modelo',
+        year: 2018,
+        plate: 'ABC-1D23',
+        created_at: newCreated_at
+      })
     })
 })
 
@@ -32,8 +38,7 @@ describe('Post test with missing values', () => {
       brand: 'Marca',
       model: 'Modelo',
       year: 2018,
-      plate: 'ABC-1D23',
-      created_at: new Date()
+      plate: 'ABC-1D23'
     }
   })
 
@@ -60,8 +65,7 @@ test('Post test with cars older than 10 years', () => {
       brand: 'Marca',
       model: 'Modelo Velho',
       year: 2014,
-      plate: 'ABC-1D23',
-      created_at: new Date()
+      plate: 'ABC-1D23'
     })
     .then((response) => {
       expect(response.status).toBe(400)
@@ -76,8 +80,7 @@ describe('Post test with a plate with wrong values', () => {
       brand: 'Marca Placa',
       model: 'Modelo Placa',
       year: 2024,
-      plate: 'ABC-1D23',
-      created_at: new Date()
+      plate: 'ABC-1D23'
     }
   })
 
@@ -144,8 +147,7 @@ test('Post test of an existing car', async () => {
     brand: 'Marca Placa Repetida',
     model: 'Modelo Placa Repetido',
     year: 2021,
-    plate: 'NTM-1F49',
-    created_at: new Date()
+    plate: 'NTM-1F49'
   })
   return request(app)
     .post(MAIN_ROUTE)
@@ -153,8 +155,7 @@ test('Post test of an existing car', async () => {
       brand: 'Marca Placa Repetida Dois',
       model: 'Modelo Placa Repetido Dois',
       year: 2022,
-      plate: 'NTM-1F49',
-      created_at: new Date()
+      plate: 'NTM-1F49'
     })
     .then((response) => {
       expect(response.status).toBe(400)

@@ -1,6 +1,7 @@
 const ValidationError = require('../errors/ValidationError')
 
 module.exports = (app) => {
+  // ----------------------> Get list of cars
   const findCars = async (filter, page, limit) => {
     let data
     let carResponse
@@ -60,23 +61,21 @@ module.exports = (app) => {
     return carResponse
   }
 
+  // ----------------------> Get a car by id
   const findOneCar = async (id) => {
     const car = await app.db('cars').where({ id })
     if (car.length < 1) throw new ValidationError('car not found')
 
     const newCar = await app.db('cars').where({ id }).select('*')
 
-    let date = new Date(newCar[0].created_at.setSeconds(0))
-
     let items = await app.db('cars_items').where({ car_id: id }).pluck('name')
 
-    const retorno = { ...newCar[0], created_at: date, items }
-    // const retorno = { ...newCar[0], items }
+    const retorno = { ...newCar[0], items }
 
     return retorno
   }
 
-  // Post car
+  // ----------------------> Post a car
   const registerCar = async (car) => {
     //Validation errors
     if (!car.brand) throw new ValidationError('brand is required')
@@ -149,7 +148,7 @@ module.exports = (app) => {
     return await app.db('cars').where({ plate: car.plate })
   }
 
-  // Put items by id
+  // ----------------------> Put items in a car by ID
   const updateCarItems = async (id, name) => {
     // Validation erros
     if (!Array.isArray(name) || name.length == 0)
@@ -176,7 +175,7 @@ module.exports = (app) => {
     return await app.db('cars_items').where({ car_id: id })
   }
 
-  // -------> Update a car
+  // ----------------------> Update a car
   const updateCar = async (id, car) => {
     const searchCar = await app.db('cars').where({ id })
     if (searchCar.length < 1) throw new ValidationError('car not found')
@@ -245,6 +244,7 @@ module.exports = (app) => {
     return await app.db('cars').where({ id }).update(car)
   }
 
+  // ----------------------> Delete a car
   const deleteCar = async (id) => {
     let car = await app.db('cars').where({ id })
     if (car.length < 1) throw new ValidationError('car not found')

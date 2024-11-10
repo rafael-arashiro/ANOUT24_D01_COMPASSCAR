@@ -4,24 +4,18 @@ const app = require('../app')
 
 const MAIN_ROUTE = '/api/v1/cars'
 
-let date = new Date()
-date.setMilliseconds(0)
-date.setSeconds(0)
-
 let model_car = {
   brand: 'Marca Get',
   model: 'Modelo Get',
   year: 2022,
-  plate: 'CBA-4T56',
-  created_at: date.toISOString()
+  plate: 'CBA-4T56'
 }
 
 let model_car2 = {
   brand: 'Marca Get',
   model: 'Modelo Get',
   year: 2022,
-  plate: 'POT-3M21',
-  created_at: date.toISOString()
+  plate: 'POT-3M21'
 }
 
 let model_items = ['Air Conditioning', 'Auto Lock', 'Power Electric Window']
@@ -40,11 +34,13 @@ test('Get car by ID', async () => {
 
   // Create car and items before the get (trought the route)
   let newId
+  let newCreated_at
   newCar = await request(app)
     .post(MAIN_ROUTE)
     .send(model_car)
     .then((response) => {
       newId = response.body.id
+      newCreated_at = response.body.created_at
       expect(response.status).toBe(201)
     })
   await request(app)
@@ -52,6 +48,7 @@ test('Get car by ID', async () => {
     .send(model_items)
     .then((response) => expect(response.status).toBe(204))
 
+  //Test
   return await request(app)
     .get(`${MAIN_ROUTE}/${newId}`)
     .then((response) => {
@@ -63,7 +60,7 @@ test('Get car by ID', async () => {
         model: model_car.model,
         year: model_car.year,
         plate: model_car.plate,
-        created_at: model_car.created_at,
+        created_at: newCreated_at,
         items: ['Air Conditioning', 'Auto Lock', 'Power Electric Window']
       })
     })
@@ -81,11 +78,13 @@ test('Get car by ID without items', async () => {
 
   // Create car and items before the get (trought the route)
   let newId
+  let newCreated_at
   newCar = await request(app)
     .post(MAIN_ROUTE)
     .send(model_car2)
     .then((response) => {
       newId = response.body.id
+      newCreated_at = response.body.created_at
       expect(response.status).toBe(201)
     })
 
@@ -99,7 +98,7 @@ test('Get car by ID without items', async () => {
         model: model_car2.model,
         year: model_car2.year,
         plate: model_car2.plate,
-        created_at: model_car2.created_at,
+        created_at: newCreated_at,
         items: []
       })
     })
@@ -118,10 +117,6 @@ describe('List cars', () => {
   beforeAll(async () => {
     await app.db.seed.run()
   })
-
-  date = new Date()
-  date.setMilliseconds(0)
-  date.setSeconds(0)
 
   const template = (newData, resposta) => {
     return request(app)
@@ -481,17 +476,25 @@ describe('List cars', () => {
 
   test('All optionals', () =>
     template(
-      { year: 2017, plate: 1, brand: 'B', page: 2, limit: 1 },
+      { year: 2017, plate: 1, brand: 'B', page: 3, limit: 2 },
       {
-        count: 2,
-        pages: 2,
+        count: 6,
+        pages: 3,
         data: [
           {
-            id: 10013,
-            brand: 'Battle Trak',
-            model: 'Roadkill Kelly',
-            year: 2022,
-            plate: 'ABA-3641',
+            id: 10027,
+            brand: 'Number 10',
+            model: 'The Buzz Wagon',
+            plate: 'ZAZ-9611',
+            year: 2020,
+            created_at: date.toISOString()
+          },
+          {
+            id: 10028,
+            brand: 'Number 00',
+            model: 'The Mean Machine',
+            plate: 'PIP-7471',
+            year: 2020,
             created_at: date.toISOString()
           }
         ]

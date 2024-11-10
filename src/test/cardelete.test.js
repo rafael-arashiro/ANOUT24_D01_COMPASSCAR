@@ -4,16 +4,11 @@ const app = require('../app')
 
 const MAIN_ROUTE = '/api/v1/cars'
 
-let date = new Date()
-date.setMilliseconds(0)
-date.setSeconds(0)
-
 let model_car = {
   brand: 'Marca Delete',
   model: 'Modelo Delete',
   year: 2023,
-  plate: 'TIL-9Z90',
-  created_at: date.toISOString()
+  plate: 'TIL-9Z90'
 }
 
 let model_items = ['Air Conditioning', 'Auto Lock', 'Power Electric Window']

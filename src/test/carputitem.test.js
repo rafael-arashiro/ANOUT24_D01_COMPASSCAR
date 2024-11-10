@@ -91,6 +91,6 @@ test('Update items with wrong ID', async () => {
     .send(['Air Conditioning', 'Auto Lock', 'Power Electric Window'])
     .then((result) => {
       expect(result.status).toBe(404)
-      expect(resposta.body.error).toBe('car not found')
+      expect(result.body.error).toBe('car not found')
     })
 })

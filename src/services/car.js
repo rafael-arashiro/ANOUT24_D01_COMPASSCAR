@@ -1,65 +1,80 @@
 const ValidationError = require('../errors/ValidationError')
 
 module.exports = (app) => {
-  const findCars = (filter = {}, page, limit) => {
+  const findCars = async (filter, page, limit) => {
     let data
     let carResponse
     let count
-
     let pages
 
-    if (!filter) count = app.db('cars').where(filter).length
-    else count = app.db('cars').where(filter).length
+    let offset = limit * page - limit
 
-    pages = Math.ceil(count / limit)
+    let filterYear
+    let filterPlate
+    let filterBrand
 
-    if (!filter)
-      data = app
-        .db('cars')
-        .join('cars', 'cars_items')
-        .column(
-          'cars.id',
-          'brand',
-          'model',
-          'year',
-          'plate',
-          'date as created_at'
-        )
-        .limit(limit)
-        .offset(page)
-    data = app
+    if (filter.year) filterYear = filter.year
+    else filterYear = 0
+
+    if (filter.plate) filterPlate = filter.plate.slice(-1)
+
+    if (filter.brand) filterBrand = filter.brand
+
+    count = await app
       .db('cars')
-      .where(filter)
-      .join('cars', 'cars_items')
-      .column(
-        'cars.id',
-        'brand',
-        'model',
-        'year',
-        'plate',
-        'date as created_at'
-      )
-      .limit(limit)
-      .offset(page)
+      .where('year', '>=', filterYear)
+      .modify((carQuery) => {
+        if (filter.plate) {
+          carQuery.andWhere('plate', 'LIKE', `%${filterPlate}`)
+        }
+      })
+      .modify((carQuery) => {
+        if (filter.brand) {
+          carQuery.andWhere('brand', 'LIKE', `${filterBrand}%`)
+        }
+      })
+      .select('*')
 
-    carResponse.push({ count: count, pages: pages, data })
+    pages = Math.ceil(count.length / limit)
+
+    data = await app
+      .db('cars')
+      .where('year', '>=', filterYear)
+      .modify((carQuery) => {
+        if (filter.plate) {
+          carQuery.andWhere('plate', 'LIKE', `%${filterPlate}`)
+        }
+      })
+      .modify((carQuery) => {
+        if (filter.brand) {
+          carQuery.andWhere('brand', 'LIKE', `${filterBrand}%`)
+        }
+      })
+      .orderBy('id')
+      .select('*')
+      .limit(limit)
+      .offset(offset)
+
+    carResponse = { count: count.length, pages: pages, data }
 
     return carResponse
   }
 
   const findOneCar = async (id) => {
     const car = await app.db('cars').where({ id })
+
     if (car.length < 1) throw new ValidationError('car not found')
 
-    let carAndItems = app
-      .db('cars')
-      .where({ 'cars.id': id })
-      .join('cars_items', 'cars.id', '=', 'cars_items.car_id')
-      .select('cars.id', 'brand', 'model', 'year', 'plate', 'created_at')
+    const newCar = await app.db('cars').where({ id }).select('*')
 
-    console.log(carAndItems)
+    let date = new Date(newCar[0].created_at.setSeconds(0))
 
-    return carAndItems
+    let items = await app.db('cars_items').where({ car_id: id }).pluck('name')
+
+    const retorno = { ...newCar[0], created_at: date, items }
+    // const retorno = { ...newCar[0], items }
+
+    return retorno
   }
 
   // Post car
@@ -124,7 +139,6 @@ module.exports = (app) => {
     if (carVerify.length > 0)
       throw new ValidationError('car already registered')
 
-    console.log(car)
     await app.db('cars').insert({
       brand: car.brand,
       model: car.model,

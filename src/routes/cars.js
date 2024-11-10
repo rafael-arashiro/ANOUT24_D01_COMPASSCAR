@@ -5,35 +5,25 @@ module.exports = (app) => {
   const router = express.Router()
 
   router.get('/', (request, response, next) => {
-    let page = request.params.page
-    if (request.params.page) page = request.params.page
+    let page
+    if (request.body.page) page = request.body.page
     else page = 1
 
     let limit
-    if (!request.params || request.params.limit < 1) limit = 5
-    else if (request.params.limit > 10) limit = 10
-    else limit = request.params.limit
 
-    if (request.params.year)
-      app.services.car
-        .findCars('year: year > request.params.year', page, limit)
-        .then((result) => response.status(200).json(result))
-        .catch((err) => next(err))
-    else if ((request.params.final_plate, page, limit))
-      app.services.car
-        .findCars('plate: plate[7] == request.params.final_plate[7]')
-        .then((result) => response.status(200).json(result))
-        .catch((err) => next(err))
-    else if ((request.params.brand, page, limit))
-      app.services.car
-        .findCars('brand: request.params.brand')
-        .then((result) => response.status(200).json(result))
-        .catch((err) => next(err))
-    else
-      app.services.car
-        .findCars(null, page, limit)
-        .then((result) => response.status(200).json(result))
-        .catch((err) => next(err))
+    if (!request.body.limit || request.body.limit < 1) limit = 5
+    else if (request.body.limit > 10) limit = 10
+    else limit = request.body.limit
+
+    let filter = request.body
+
+    app.services.car
+      .findCars(filter, page, limit)
+      .then((result) => response.status(200).json(result))
+      .catch((err) => {
+        console.log(err)
+        next(err)
+      })
   })
 
   router.post('/', (request, response, next) => {
@@ -48,7 +38,7 @@ module.exports = (app) => {
       .updateCarItems(request.params.id, request.body)
       .then((result) => response.status(204).send())
       .catch((err) => {
-        console.log(err)
+        if (err.message == 'car not found') response.status(404).json(err)
         next(err)
       })
   })
@@ -56,12 +46,9 @@ module.exports = (app) => {
   router.get('/:id', (request, response, next) => {
     app.services.car
       .findOneCar(request.params.id)
-      .then((result) => {
-        console.log(result[0])
-        response.status(200).json(result)
-      })
+      .then((result) => response.status(200).json(result))
       .catch((err) => {
-        console.log(err)
+        if (err.message == 'car not found') response.status(404).json(err)
         next(err)
       })
   })

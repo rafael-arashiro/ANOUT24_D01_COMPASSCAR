@@ -3,7 +3,7 @@ exports.up = async (knex) => {
     t.increments('id').primary()
     t.string('name').notNull()
     t.integer('car_id').unsigned().references('id').inTable('cars')
-    t.date('date').notNull()
+    t.timestamp('date').defaultTo(knex.fn.now()).notNull()
   })
 }
 

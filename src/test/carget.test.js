@@ -232,9 +232,9 @@ describe('List cars', () => {
       }
     ))
 
-  test('Optional plate', () =>
+  test('Optional final plate', () =>
     template(
-      { plate: 'FHR-2461' },
+      { plate: 1 },
       {
         count: 8,
         pages: 2,
@@ -481,7 +481,7 @@ describe('List cars', () => {
 
   test('All optionals', () =>
     template(
-      { year: 2017, plate: 'ABA-3641', brand: 'B', page: 2, limit: 1 },
+      { year: 2017, plate: 1, brand: 'B', page: 2, limit: 1 },
       {
         count: 2,
         pages: 2,

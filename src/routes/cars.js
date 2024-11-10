@@ -46,7 +46,7 @@ module.exports = (app) => {
   router.get('/:id', (request, response, next) => {
     app.services.car
       .findOneCar(request.params.id)
-      .then(() => response.status(200).send())
+      .then((result) => response.status(200).json(result))
       .catch((err) => {
         if (err.message == 'car not found') response.status(404).json(err)
         next(err)

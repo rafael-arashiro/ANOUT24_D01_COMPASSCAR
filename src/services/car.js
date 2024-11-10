@@ -16,7 +16,7 @@ module.exports = (app) => {
     if (filter.year) filterYear = filter.year
     else filterYear = 0
 
-    if (filter.plate) filterPlate = filter.plate.slice(-1)
+    if (filter.plate) filterPlate = filter.plate
 
     if (filter.brand) filterBrand = filter.brand
 
@@ -30,7 +30,7 @@ module.exports = (app) => {
       })
       .modify((carQuery) => {
         if (filter.brand) {
-          carQuery.andWhere('brand', 'LIKE', `${filterBrand}%`)
+          carQuery.andWhere('brand', 'LIKE', `%${filterBrand}%`)
         }
       })
       .select('*')
@@ -47,7 +47,7 @@ module.exports = (app) => {
       })
       .modify((carQuery) => {
         if (filter.brand) {
-          carQuery.andWhere('brand', 'LIKE', `${filterBrand}%`)
+          carQuery.andWhere('brand', 'LIKE', `%${filterBrand}%`)
         }
       })
       .orderBy('id')

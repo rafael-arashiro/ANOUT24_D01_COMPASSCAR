@@ -68,8 +68,11 @@ module.exports = (app) => {
   router.delete('/:id', (request, response, next) => {
     app.services.car
       .deleteCar(request.params.id)
-      .then((result) => response(204).send())
-      .catch((err) => next(err))
+      .then(() => response.status(204).send())
+      .catch((err) => {
+        if (err.message == 'car not found') response.status(404).json(err)
+        next(err)
+      })
   })
 
   return router

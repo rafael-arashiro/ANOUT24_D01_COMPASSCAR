@@ -24,7 +24,6 @@ app.use((err, request, response, next) => {
   const { name, message, stack } = err
   if (name === 'ValidationError') response.status(400).json({ error: message })
   else {
-    // console.log(message)
     response.status(500).send('an internal server error occurred')
   }
   next(err)

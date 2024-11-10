@@ -26,7 +26,7 @@ test('Update car items', async () => {
     })
 })
 
-test('Update car items', async () => {
+test('Update car items for another item', async () => {
   return request(app)
     .put(`${MAIN_ROUTE}/${newCar[0]}/items`)
     .send(['Window Film'])

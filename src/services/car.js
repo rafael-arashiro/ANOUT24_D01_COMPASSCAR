@@ -245,9 +245,11 @@ module.exports = (app) => {
     return await app.db('cars').where({ id }).update(car)
   }
 
-  const deleteCar = (id) => {
-    let car = app.db('cars').where({ id })
-    if (!car) throw new ValidationError('car not found')
+  const deleteCar = async (id) => {
+    let car = await app.db('cars').where({ id })
+    if (car.length < 1) throw new ValidationError('car not found')
+
+    await app.db('cars_items').where({ car_id: id }).del()
 
     return app.db('cars').where({ id }).del()
   }

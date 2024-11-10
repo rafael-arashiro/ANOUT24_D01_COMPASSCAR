@@ -62,7 +62,6 @@ module.exports = (app) => {
 
   const findOneCar = async (id) => {
     const car = await app.db('cars').where({ id })
-
     if (car.length < 1) throw new ValidationError('car not found')
 
     const newCar = await app.db('cars').where({ id }).select('*')
@@ -177,9 +176,10 @@ module.exports = (app) => {
     return await app.db('cars_items').where({ car_id: id })
   }
 
-  const updateCar = (id, car) => {
-    const carFound = app.db('cars').where({ id })
-    if (!carFound) throw new ValidationError('car not found')
+  // -------> Update a car
+  const updateCar = async (id, car) => {
+    const searchCar = await app.db('cars').where({ id })
+    if (searchCar.length < 1) throw new ValidationError('car not found')
 
     if (car.brand)
       if (!car.model) throw new ValidationError('model must also be informed')
@@ -188,23 +188,61 @@ module.exports = (app) => {
       if (car.year < 2015 || car.year > 2025)
         throw new ValidationError('year must be between 2015 and 2025')
 
-    if (car.plate)
-      if (car.plate == carFound.id)
+    if (car.plate) {
+      let carPlateSearch
+      carPlateSearch = await app.db('cars').where({ plate: car.plate })
+      if (carPlateSearch.length > 0)
         throw new ValidationError('car already registered')
+    }
 
-    if (
-      typeof car.plate[0] === 'string' &&
-      typeof car.plate[1] === 'string' &&
-      typeof car.plate[2] === 'string' &&
-      car.plate[3] === '-' &&
-      typeof car.plate[4] === 'number' &&
-      (typeof car.plate[5] === 'string' || typeof car.plate[5] === 'number') &&
-      typeof car.plate[6] === 'number' &&
-      typeof car.plate[7] === 'number'
-    )
-      throw new ValidationError('plate must be in the correct format ABC-1C34')
+    let platePositions012 = [
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H',
+      'I',
+      'J',
+      'K',
+      'L',
+      'M',
+      'N',
+      'O',
+      'P',
+      'Q',
+      'R',
+      'S',
+      'T',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
+      'Z'
+    ]
+    let platePositions467 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    let platePositions5 = platePositions012.concat(platePositions467)
 
-    return app.db('cars').where({ id }).update(car)
+    if (car.plate)
+      if (
+        car.plate.length != 8 ||
+        platePositions012.indexOf(car.plate[0]) == -1 ||
+        platePositions012.indexOf(car.plate[1]) == -1 ||
+        platePositions012.indexOf(car.plate[2]) == -1 ||
+        car.plate[3] != '-' ||
+        platePositions467.indexOf(car.plate[4]) == -1 ||
+        platePositions5.indexOf(car.plate[5]) == -1 ||
+        platePositions467.indexOf(car.plate[6]) == -1 ||
+        platePositions467.indexOf(car.plate[7]) == -1
+      )
+        throw new ValidationError(
+          'plate must be in the correct format ABC-1C34'
+        )
+
+    return await app.db('cars').where({ id }).update(car)
   }
 
   const deleteCar = (id) => {

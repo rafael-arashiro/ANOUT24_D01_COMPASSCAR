@@ -16,12 +16,12 @@ test('Post test', async () => {
   return request(app)
     .post(MAIN_ROUTE)
     .send(model_car)
-    .then((result) => {
-      expect(result.status).toBe(201)
-      expect(result.body.brand).toBe(model_car.brand)
-      expect(result.body.model).toBe(model_car.model)
-      expect(result.body.plate).toBe(model_car.plate)
-      expect(result.body.year).toBe(model_car.year)
+    .then((response) => {
+      expect(response.status).toBe(201)
+      expect(response.body.brand).toBe(model_car.brand)
+      expect(response.body.model).toBe(model_car.model)
+      expect(response.body.plate).toBe(model_car.plate)
+      expect(response.body.year).toBe(model_car.year)
     })
 })
 
@@ -41,9 +41,9 @@ describe('Post test with missing values', () => {
     return request(app)
       .post(MAIN_ROUTE)
       .send({ ...validInput, ...newData })
-      .then((result) => {
-        expect(result.status).toBe(400)
-        expect(result.body.error).toBe(errorMessage)
+      .then((response) => {
+        expect(response.status).toBe(400)
+        expect(response.body.error).toBe(errorMessage)
       })
   }
 
@@ -63,9 +63,9 @@ test('Post test with cars older than 10 years', () => {
       plate: 'ABC-1D23',
       created_at: new Date()
     })
-    .then((result) => {
-      expect(result.status).toBe(400)
-      expect(result.body.error).toBe('year must be between 2015 and 2025')
+    .then((response) => {
+      expect(response.status).toBe(400)
+      expect(response.body.error).toBe('year must be between 2015 and 2025')
     })
 })
 
@@ -85,9 +85,9 @@ describe('Post test with a plate with wrong values', () => {
     return request(app)
       .post(MAIN_ROUTE)
       .send({ ...validInput, ...newData })
-      .then((result) => {
-        expect(result.status).toBe(400)
-        expect(result.body.error).toBe(errorMessage)
+      .then((response) => {
+        expect(response.status).toBe(400)
+        expect(response.body.error).toBe(errorMessage)
       })
   }
 
@@ -156,8 +156,8 @@ test('Post test of an existing car', async () => {
       plate: 'NTM-1F49',
       created_at: new Date()
     })
-    .then((result) => {
-      expect(result.status).toBe(400)
-      expect(result.body.error).toBe('car already registered')
+    .then((response) => {
+      expect(response.status).toBe(400)
+      expect(response.body.error).toBe('car already registered')
     })
 })

@@ -28,91 +28,91 @@ let model_items = ['Air Conditioning', 'Auto Lock', 'Power Electric Window']
 
 let newCar
 
-// test('Get car by ID', async () => {
-//   // Delete old car
-//   await app
-//     .db('cars_items')
-//     .join('cars', 'cars_items.car_id', '=', 'cars.id')
-//     .where({ plate: 'CBA-4T56' })
-//     .del()
+test('Get car by ID', async () => {
+  // Delete old car
+  await app
+    .db('cars_items')
+    .join('cars', 'cars_items.car_id', '=', 'cars.id')
+    .where({ plate: 'CBA-4T56' })
+    .del()
 
-//   await app.db('cars').where({ plate: 'CBA-4T56' }).del()
+  await app.db('cars').where({ plate: 'CBA-4T56' }).del()
 
-//   // Create car and items before the get (trought the route)
-//   let newId
-//   newCar = await request(app)
-//     .post(MAIN_ROUTE)
-//     .send(model_car)
-//     .then((response) => {
-//       newId = response.body.id
-//       expect(response.status).toBe(201)
-//     })
-//   await request(app)
-//     .put(`${MAIN_ROUTE}/${newId}/items`)
-//     .send(model_items)
-//     .then((response) => expect(response.status).toBe(204))
+  // Create car and items before the get (trought the route)
+  let newId
+  newCar = await request(app)
+    .post(MAIN_ROUTE)
+    .send(model_car)
+    .then((response) => {
+      newId = response.body.id
+      expect(response.status).toBe(201)
+    })
+  await request(app)
+    .put(`${MAIN_ROUTE}/${newId}/items`)
+    .send(model_items)
+    .then((response) => expect(response.status).toBe(204))
 
-//   return await request(app)
-//     .get(`${MAIN_ROUTE}/${newId}`)
-//     .then((response) => {
-//       expect(response.status).toBe(200)
-//       expect(response.body).toHaveProperty('id')
-//       expect(response.body).toStrictEqual({
-//         id: newId,
-//         brand: model_car.brand,
-//         model: model_car.model,
-//         year: model_car.year,
-//         plate: model_car.plate,
-//         created_at: model_car.created_at,
-//         items: ['Air Conditioning', 'Auto Lock', 'Power Electric Window']
-//       })
-//     })
-// })
+  return await request(app)
+    .get(`${MAIN_ROUTE}/${newId}`)
+    .then((response) => {
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('id')
+      expect(response.body).toStrictEqual({
+        id: newId,
+        brand: model_car.brand,
+        model: model_car.model,
+        year: model_car.year,
+        plate: model_car.plate,
+        created_at: model_car.created_at,
+        items: ['Air Conditioning', 'Auto Lock', 'Power Electric Window']
+      })
+    })
+})
 
-// test('Get car by ID without items', async () => {
-//   // Delete old car
-//   await app
-//     .db('cars_items')
-//     .join('cars', 'cars_items.car_id', '=', 'cars.id')
-//     .where({ plate: 'POT-3M21' })
-//     .del()
+test('Get car by ID without items', async () => {
+  // Delete old car
+  await app
+    .db('cars_items')
+    .join('cars', 'cars_items.car_id', '=', 'cars.id')
+    .where({ plate: 'POT-3M21' })
+    .del()
 
-//   await app.db('cars').where({ plate: 'POT-3M21' }).del()
+  await app.db('cars').where({ plate: 'POT-3M21' }).del()
 
-//   // Create car and items before the get (trought the route)
-//   let newId
-//   newCar = await request(app)
-//     .post(MAIN_ROUTE)
-//     .send(model_car2)
-//     .then((response) => {
-//       newId = response.body.id
-//       expect(response.status).toBe(201)
-//     })
+  // Create car and items before the get (trought the route)
+  let newId
+  newCar = await request(app)
+    .post(MAIN_ROUTE)
+    .send(model_car2)
+    .then((response) => {
+      newId = response.body.id
+      expect(response.status).toBe(201)
+    })
 
-//   return await request(app)
-//     .get(`${MAIN_ROUTE}/${newId}`)
-//     .then((response) => {
-//       expect(response.status).toBe(200)
-//       expect(response.body).toStrictEqual({
-//         id: newId,
-//         brand: model_car2.brand,
-//         model: model_car2.model,
-//         year: model_car2.year,
-//         plate: model_car2.plate,
-//         created_at: model_car2.created_at,
-//         items: []
-//       })
-//     })
-// })
+  return await request(app)
+    .get(`${MAIN_ROUTE}/${newId}`)
+    .then((response) => {
+      expect(response.status).toBe(200)
+      expect(response.body).toStrictEqual({
+        id: newId,
+        brand: model_car2.brand,
+        model: model_car2.model,
+        year: model_car2.year,
+        plate: model_car2.plate,
+        created_at: model_car2.created_at,
+        items: []
+      })
+    })
+})
 
-// test('Get car with wrong ID', async () => {
-//   return request(app)
-//     .get(`${MAIN_ROUTE}/99`)
-//     .then((response) => {
-//       expect(response.status).toBe(404)
-//       expect(response.body.error).toBe('car not found')
-//     })
-// })
+test('Get car with wrong ID', async () => {
+  return request(app)
+    .get(`${MAIN_ROUTE}/99`)
+    .then((response) => {
+      expect(response.status).toBe(404)
+      expect(response.body.error).toBe('car not found')
+    })
+})
 
 describe('List cars', () => {
   beforeAll(async () => {
@@ -127,9 +127,9 @@ describe('List cars', () => {
     return request(app)
       .get(MAIN_ROUTE)
       .send(newData)
-      .then((result) => {
-        expect(result.status).toBe(200)
-        expect(result.body).toStrictEqual(resposta)
+      .then((response) => {
+        expect(response.status).toBe(200)
+        expect(response.body).toStrictEqual(resposta)
       })
   }
 

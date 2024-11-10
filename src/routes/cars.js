@@ -36,7 +36,7 @@ module.exports = (app) => {
   router.put('/:id/items', (request, response, next) => {
     app.services.car
       .updateCarItems(request.params.id, request.body)
-      .then((result) => response.status(204).send())
+      .then(() => response.status(204).send())
       .catch((err) => {
         if (err.message == 'car not found') response.status(404).json(err)
         next(err)
@@ -46,7 +46,7 @@ module.exports = (app) => {
   router.get('/:id', (request, response, next) => {
     app.services.car
       .findOneCar(request.params.id)
-      .then((result) => response.status(200).json(result))
+      .then(() => response.status(200).send())
       .catch((err) => {
         if (err.message == 'car not found') response.status(404).json(err)
         next(err)
@@ -56,8 +56,13 @@ module.exports = (app) => {
   router.patch('/:id', (request, response, next) => {
     app.services.car
       .updateCar(request.params.id, request.body)
-      .then((result) => response.status(204).send())
-      .catch((err) => next(err))
+      .then(() => response.status(204).send())
+      .catch((err) => {
+        if (err.message == 'car not found') response.status(404).json(err)
+        if (err.message == 'car already registered')
+          response.status(409).json(err)
+        else next(err)
+      })
   })
 
   router.delete('/:id', (request, response, next) => {

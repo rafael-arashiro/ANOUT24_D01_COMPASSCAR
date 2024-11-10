@@ -21,8 +21,8 @@ test('Update car items', async () => {
   return request(app)
     .put(`${MAIN_ROUTE}/${newCar[0]}/items`)
     .send(model_items)
-    .then((result) => {
-      expect(result.status).toBe(204)
+    .then((response) => {
+      expect(response.status).toBe(204)
     })
 })
 
@@ -30,8 +30,8 @@ test('Update car items', async () => {
   return request(app)
     .put(`${MAIN_ROUTE}/${newCar[0]}/items`)
     .send(['Window Film'])
-    .then((result) => {
-      expect(result.status).toBe(204)
+    .then((response) => {
+      expect(response.status).toBe(204)
     })
 })
 
@@ -39,9 +39,9 @@ test('Update items without body', async () => {
   return request(app)
     .put(`${MAIN_ROUTE}/${newCar[0]}/items`)
     .send()
-    .then((result) => {
-      expect(result.status).toBe(400)
-      expect(result.body.error).toBe('items is required')
+    .then((response) => {
+      expect(response.status).toBe(400)
+      expect(response.body.error).toBe('items is required')
     })
 })
 
@@ -55,9 +55,9 @@ describe('Update items with wrong values', () => {
     return request(app)
       .put(`${MAIN_ROUTE}/${newCar[0]}/items`)
       .send(newData)
-      .then((result) => {
-        expect(result.status).toBe(400)
-        expect(result.body.error).toBe(errorMessage)
+      .then((response) => {
+        expect(response.status).toBe(400)
+        expect(response.body.error).toBe(errorMessage)
       })
   }
 
@@ -89,8 +89,8 @@ test('Update items with wrong ID', async () => {
   return request(app)
     .put(`${MAIN_ROUTE}/123456789/items`)
     .send(['Air Conditioning', 'Auto Lock', 'Power Electric Window'])
-    .then((result) => {
-      expect(result.status).toBe(404)
-      expect(result.body.error).toBe('car not found')
+    .then((response) => {
+      expect(response.status).toBe(404)
+      expect(response.body.error).toBe('car not found')
     })
 })

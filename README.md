@@ -1,6 +1,6 @@
 # ANOUT24_D01_COMPASSCAR
 
-This projeto brings the API back-end of a car management.
+This project brings the API back-end of a car management. Made in NodeJs and Express.
 
 How to use
 The API have the following actions:
@@ -51,5 +51,3 @@ The database is named compasscar. It has two tables with the following columns a
             • car_id: integer, not null.
             • date: timestamp, not null.
             The car_id, in table cars_items, is referenced to id, in table cars.
-
-

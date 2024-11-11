@@ -1,5 +1,37 @@
 const ValidationError = require('../errors/ValidationError')
 
+// ----------------------> Car plates variables
+let platePositions012 = [
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'O',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+  'Z'
+]
+let platePositions467 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+let platePositions5 = platePositions012.concat(platePositions467)
+
 module.exports = (app) => {
   // ----------------------> Get list of cars
   const findCars = async (filter, page, limit) => {
@@ -89,37 +121,6 @@ module.exports = (app) => {
     if (car.year < 2015 || car.year > 2025)
       throw new ValidationError('year must be between 2015 and 2025')
 
-    let platePositions012 = [
-      'A',
-      'B',
-      'C',
-      'D',
-      'E',
-      'F',
-      'G',
-      'H',
-      'I',
-      'J',
-      'K',
-      'L',
-      'M',
-      'N',
-      'O',
-      'P',
-      'Q',
-      'R',
-      'S',
-      'T',
-      'U',
-      'V',
-      'W',
-      'X',
-      'Y',
-      'Z'
-    ]
-    let platePositions467 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    let platePositions5 = platePositions012.concat(platePositions467)
-
     if (
       car.plate.length != 8 ||
       platePositions012.indexOf(car.plate[0]) == -1 ||
@@ -193,37 +194,6 @@ module.exports = (app) => {
       if (carPlateSearch.length > 0)
         throw new ValidationError('car already registered')
     }
-
-    let platePositions012 = [
-      'A',
-      'B',
-      'C',
-      'D',
-      'E',
-      'F',
-      'G',
-      'H',
-      'I',
-      'J',
-      'K',
-      'L',
-      'M',
-      'N',
-      'O',
-      'P',
-      'Q',
-      'R',
-      'S',
-      'T',
-      'U',
-      'V',
-      'W',
-      'X',
-      'Y',
-      'Z'
-    ]
-    let platePositions467 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    let platePositions5 = platePositions012.concat(platePositions467)
 
     if (car.plate)
       if (

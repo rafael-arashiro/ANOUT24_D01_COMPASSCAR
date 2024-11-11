@@ -1,10 +1,12 @@
+require('dotenv').config()
+
 module.exports = {
   development: {
     client: 'mysql2',
     connection: {
-      host: 'localhost',
-      user: 'root',
-      password: 'Ihc741258_',
+      host: process.env.SERVER,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
       database: 'compasscar'
     },
     migrations: {

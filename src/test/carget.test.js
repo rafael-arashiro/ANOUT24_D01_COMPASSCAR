@@ -104,7 +104,7 @@ test('Get car by ID without items', async () => {
     })
 })
 
-test('Get car with wrong ID', async () => {
+test.only('Get car with wrong ID', async () => {
   return request(app)
     .get(`${MAIN_ROUTE}/99`)
     .then((response) => {

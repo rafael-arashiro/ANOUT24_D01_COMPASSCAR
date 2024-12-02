@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "lint": "eslint src/** test/** --fix",
-    "test": "jest",
+    "test": "jest --verbose=true --detectOpenHandles",
     "secure-mode": "jest --watchAll --verbose=true --detectOpenHandles"
   },
   "author": "Rafael Arashiro",
